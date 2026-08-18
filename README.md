@@ -21,6 +21,9 @@ custom editor - similar to Altova Authentic, but for JSON.
 - VS Code 1.85.0 or newer.
 - Node.js 18+ and npm (for building/packaging).
 
+## Example:
+![Demo](./images/example.png)
+
 ## Project structure
 
 ```
