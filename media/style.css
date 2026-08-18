@@ -1,0 +1,301 @@
+/* JSON Form Viewer - WebView styling.
+ * Uses VS Code theme variables so it adapts to light and dark themes. */
+
+:root {
+  --kv-border: var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.35));
+  --kv-hover: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.12));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  color: var(--vscode-editor-foreground);
+  background-color: var(--vscode-editor-background);
+  padding: 12px 14px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Toolbar                                                             */
+/* ------------------------------------------------------------------ */
+
+#toolbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 14px;
+  background-color: var(--vscode-editor-background);
+  border-bottom: 1px solid var(--kv-border);
+  z-index: 10;
+}
+
+#toolbar button {
+  color: var(--vscode-button-foreground);
+  background-color: var(--vscode-button-background);
+  border: none;
+  padding: 4px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--vscode-font-size);
+}
+
+#toolbar button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+#toolbar #save {
+  background-color: var(--vscode-button-background);
+  font-weight: 600;
+}
+
+#status {
+  margin-left: auto;
+  font-size: calc(var(--vscode-font-size) * 0.9);
+  color: var(--vscode-descriptionForeground);
+}
+
+#status.error {
+  color: var(--vscode-errorForeground);
+}
+
+/* ------------------------------------------------------------------ */
+/* Editor container                                                    */
+/* ------------------------------------------------------------------ */
+
+#editor {
+  max-width: 900px;
+}
+
+#empty-state {
+  color: var(--vscode-descriptionForeground);
+  padding: 24px 4px;
+}
+
+#empty-state .error {
+  color: var(--vscode-errorForeground);
+}
+
+/* ------------------------------------------------------------------ */
+/* Collapsible sections (objects & arrays)                             */
+/* ------------------------------------------------------------------ */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+
+.section-header:hover {
+  background-color: var(--kv-hover);
+}
+
+.collapse-toggle {
+  background: transparent;
+  border: none;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  font-size: 12px;
+  width: 16px;
+  padding: 0;
+  line-height: 1;
+}
+
+.section-title {
+  color: var(--vscode-symbolIcon-classForeground, var(--vscode-foreground));
+  font-weight: 600;
+  font-size: calc(var(--vscode-font-size) * 0.95);
+  user-select: none;
+}
+
+.section-body {
+  margin-left: 14px;
+  padding-left: 10px;
+  border-left: 1px solid var(--kv-border);
+}
+
+.section-body.collapsed {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Object fields                                                       */
+/* ------------------------------------------------------------------ */
+
+.json-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 3px 4px;
+  border-radius: 3px;
+}
+
+.json-field:hover {
+  background-color: var(--kv-hover);
+}
+
+.json-key {
+  min-width: 120px;
+  max-width: 220px;
+  color: var(--vscode-symbolIcon-keyForeground, var(--vscode-foreground));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 5px;
+  user-select: none;
+}
+
+.json-key::after {
+  content: ':';
+  color: var(--vscode-descriptionForeground);
+}
+
+.json-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.empty-note {
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
+  padding: 2px 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Primitive fields                                                    */
+/* ------------------------------------------------------------------ */
+
+.json-primitive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.type-badge {
+  font-size: calc(var(--vscode-font-size) * 0.78);
+  padding: 1px 6px;
+  border-radius: 8px;
+  min-width: 48px;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+  background-color: var(--vscode-badge-background, rgba(128, 128, 128, 0.2));
+}
+
+.type-string {
+  color: var(--vscode-symbolIcon-stringForeground, #ce9178);
+}
+
+.type-number {
+  color: var(--vscode-symbolIcon-numberForeground, #b5cea8);
+}
+
+.type-boolean {
+  color: var(--vscode-symbolIcon-booleanForeground, #569cd6);
+}
+
+.type-null {
+  color: var(--vscode-symbolIcon-nullForeground, #808080);
+}
+
+.json-input {
+  flex: 1;
+  min-width: 0;
+  color: var(--vscode-input-foreground);
+  background-color: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, var(--kv-border));
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+.json-input:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Arrays                                                              */
+/* ------------------------------------------------------------------ */
+
+.json-array-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 3px 4px;
+  border-radius: 3px;
+}
+
+.json-array-item:hover {
+  background-color: var(--kv-hover);
+}
+
+.json-item-index {
+  color: var(--vscode-descriptionForeground);
+  padding-top: 5px;
+  min-width: 28px;
+  user-select: none;
+  font-size: calc(var(--vscode-font-size) * 0.9);
+}
+
+.remove-item {
+  background: transparent;
+  border: none;
+  color: var(--vscode-descriptionForeground);
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  visibility: hidden;
+}
+
+.json-array-item:hover .remove-item {
+  visibility: visible;
+}
+
+.remove-item:hover {
+  color: var(--vscode-errorForeground);
+  background-color: var(--kv-hover);
+}
+
+.add-item {
+  color: var(--vscode-button-foreground);
+  background-color: var(
+    --vscode-button-secondaryBackground,
+    var(--vscode-button-background)
+  );
+  border: none;
+  padding: 3px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: calc(var(--vscode-font-size) * 0.88);
+}
+
+.add-item:hover {
+  background-color: var(
+    --vscode-button-secondaryHoverBackground,
+    var(--vscode-button-hoverBackground)
+  );
+}

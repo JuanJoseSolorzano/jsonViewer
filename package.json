@@ -1,0 +1,76 @@
+{
+  "name": "json-form-viewer",
+  "displayName": "JSON Form Viewer",
+  "description": "Render JSON files as an editable, form-based GUI inside a custom WebView editor.",
+  "version": "1.0.0",
+  "publisher": "json-form-viewer",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "json",
+    "form",
+    "editor",
+    "custom editor",
+    "webview",
+    "gui"
+  ],
+  "activationEvents": [
+    "onCustomEditor:jsonFormViewer.jsonEditor",
+    "onCommand:json-form-viewer.openWithForm"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "jsonFormViewer.jsonEditor",
+        "displayName": "JSON Form",
+        "selector": [
+          {
+            "filenamePattern": "*.json"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "json-form-viewer.openWithForm",
+        "title": "Open with JSON Form",
+        "category": "JSON Form"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "json-form-viewer.openWithForm",
+          "when": "resourceExtname =~ /\\.json$/i",
+          "group": "1_open@1"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "json-form-viewer.openWithForm",
+          "when": "resourceExtname =~ /\\.json$/i",
+          "group": "navigation@1"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.24.0",
+    "typescript": "^5.3.3"
+  }
+}
