@@ -2,8 +2,12 @@
   "name": "json-form-viewer",
   "displayName": "JSON Form Viewer",
   "description": "Render JSON files as an editable, form-based GUI inside a custom WebView editor.",
-  "version": "1.0.0",
-  "publisher": "json-form-viewer",
+  "version": "1.0.2",
+  "publisher": "Solorzano-JuanJose",
+  "repository":{
+    "type": "git",
+    "url": "https://github.com/JuanJoseSolorzano/jsonViewer"
+  },
   "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
