@@ -19,62 +19,23 @@ custom editor - similar to Altova Authentic, but for JSON.
 ## Requirements
 
 - VS Code 1.85.0 or newer.
-- Node.js 18+ and npm (for building/packaging).
 
 ## Example:
-![Demo](./images/example.png)
+![Demo](./images/demo1.png)
 
-## Project structure
+---
 
-```
-json-form-viewer/
-├── package.json          # Extension manifest (custom editor contribution)
-├── tsconfig.json         # TypeScript configuration
-├── .vscodeignore         # Files excluded from the packaged .vsix
-├── src/
-│   ├── extension.ts      # Entry point: registers the editor, command, status bar
-│   └── formRenderer.ts   # CustomTextEditorProvider (WebView host)
-└── media/
-    ├── main.js           # WebView frontend logic (render/serialize the form)
-    └── style.css         # WebView styling (theme-aware)
-```
-
-## Build
-
-```bash
-npm install
-npm run compile
-```
-
-This compiles `src/` into `out/` using `tsc`.
-
-## Run / debug
-
-1. Open this folder in VS Code.
-2. Press `F5` to launch an Extension Development Host.
-3. Open any `.json` file - it opens in the JSON Form editor automatically.
-4. You can also right-click a `.json` file in the Explorer and choose
+1. Open any .json file in VS Code.
+2. If you have the extension installed, it opens in the JSON Form editor automatically.
+3. You can also right-click a `.json` file in the Explorer and choose.
    **Open with JSON Form**, use the editor title menu, or click the
    **JSON Form** status bar item.
 
-## Package
+## Installation
+- Vscode Marketplace: [https://marketplace.visualstudio.com/items?itemName=Solorzano-JuanJose.json-form-viewer](https://marketplace.visualstudio.com/items?itemName=Solorzano-JuanJose.json-form-viewer)
 
-Install `vsce` (if not already available) and build the `.vsix`:
+- Install from VSIX: Download the latest release from the GitHub repository `json-form-viewer.vsix` 
 
-```bash
-npm install -g @vscode/vsce
-npm run package
-# or directly:
-npx @vscode/vsce package
-```
-
-This produces `json-form-viewer-1.0.0.vsix`.
-
-## Install the packaged extension
-
-```bash
-code --install-extension json-form-viewer-1.0.0.vsix
-```
 
 ## Configuration notes
 

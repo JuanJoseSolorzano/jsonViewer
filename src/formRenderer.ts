@@ -3,47 +3,27 @@ import * as vscode from 'vscode';
 /**
  * Custom text editor provider that renders JSON documents as an editable
  * HTML form inside a WebView.
- */
+*/
 export class JsonFormEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'jsonFormViewer.jsonEditor';
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
-  public async resolveCustomTextEditor(
-    document: vscode.TextDocument,
-    webviewPanel: vscode.WebviewPanel,
-    _token: vscode.CancellationToken
-  ): Promise<void> {
-    webviewPanel.webview.options = {
-      enableScripts: true,
-      localResourceRoots: [
-        vscode.Uri.joinPath(this.context.extensionUri, 'media'),
-      ],
-    };
-
+  public async resolveCustomTextEditor(document:vscode.TextDocument, webviewPanel:vscode.WebviewPanel, _token:vscode.CancellationToken):Promise<void> {
+    webviewPanel.webview.options = { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'media')] };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
-    const updateWebview = (): void => {
-      webviewPanel.webview.postMessage({
-        type: 'update',
-        text: document.getText(),
-      });
-    };
+    const updateWebview = (): void => { webviewPanel.webview.postMessage({ type:'update', text:document.getText() }); };
 
     // Keep the WebView in sync when the underlying document changes
     // (e.g. an undo or an external edit).
-    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
-      (e) => {
-        if (e.document.uri.toString() === document.uri.toString()) {
+    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {if (e.document.uri.toString() === document.uri.toString()) {
           updateWebview();
         }
       }
     );
 
-    webviewPanel.onDidDispose(() => {
-      changeDocumentSubscription.dispose();
-    });
-
+    webviewPanel.onDidDispose(() => { changeDocumentSubscription.dispose(); });
     webviewPanel.webview.onDidReceiveMessage(async (message) => {
       switch (message.type) {
         case 'save':
@@ -61,7 +41,6 @@ export class JsonFormEditorProvider implements vscode.CustomTextEditorProvider {
           return;
       }
     });
-
     updateWebview();
   }
 
@@ -69,46 +48,28 @@ export class JsonFormEditorProvider implements vscode.CustomTextEditorProvider {
    * Replaces the document contents with the given JSON text and persists it
    * to disk.
    */
-  private async saveDocument(
-    document: vscode.TextDocument,
-    text: string
-  ): Promise<void> {
+  private async saveDocument(document: vscode.TextDocument, text: string): Promise<void> {
     try {
       const edit = new vscode.WorkspaceEdit();
-      edit.replace(
-        document.uri,
-        new vscode.Range(0, 0, document.lineCount, 0),
-        text
-      );
-
+      edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0),text);
       const applied = await vscode.workspace.applyEdit(edit);
       if (!applied) {
-        void vscode.window.showErrorMessage(
-          'JSON Form: could not apply changes to the document.'
-        );
+        void vscode.window.showErrorMessage('JSON Form: could not apply changes to the document.');
         return;
       }
 
-      const doc = vscode.workspace.textDocuments.find(
-        (d) => d.uri.toString() === document.uri.toString()
-      );
+      const doc = vscode.workspace.textDocuments.find((d) => d.uri.toString() === document.uri.toString());
       if (doc && doc.isDirty) {
         await doc.save();
       }
     } catch (err) {
-      void vscode.window.showErrorMessage(
-        `JSON Form: save failed: ${(err as Error).message}`
-      );
+      void vscode.window.showErrorMessage(`JSON Form: save failed: ${(err as Error).message}`);
     }
   }
 
   private getHtmlForWebview(webview: vscode.Webview): string {
-    const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, 'media', 'main.js')
-    );
-    const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, 'media', 'style.css')
-    );
+    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', 'main.js'));
+    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', 'style.css'));
     const nonce = getNonce();
 
     return `<!DOCTYPE html>
@@ -139,8 +100,7 @@ export class JsonFormEditorProvider implements vscode.CustomTextEditorProvider {
 
 function getNonce(): string {
   let text = '';
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 32; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }

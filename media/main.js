@@ -8,12 +8,11 @@
   'use strict';
 
   const vscode = acquireVsCodeApi();
-
   const editorEl = document.getElementById('editor');
   const emptyStateEl = document.getElementById('empty-state');
   const statusEl = document.getElementById('status');
-
   let parseError = null;
+  let sanitizedJsonc = false;
   let statusTimer = null;
 
   // -------------------------------------------------------------------------
@@ -328,9 +327,113 @@
     }, 3000);
   }
 
+  // -------------------------------------------------------------------------
+  // JSONC sanitization (strip comments and trailing commas)
+  // -------------------------------------------------------------------------
+
+  // Converts JSONC (JSON with // or /* */ comments and trailing commas) into
+  // strict JSON while preserving string literals. Returns { text, modified }.
+  function sanitizeJsonc(input) {
+    let output = '';
+    let modified = false;
+    let inString = false;
+    let lineComment = false;
+    let blockComment = false;
+    let i = 0;
+
+    while (i < input.length) {
+      const ch = input[i];
+      const next = input[i + 1];
+
+      if (lineComment) {
+        if (ch === '\n') {
+          lineComment = false;
+          output += ch;
+        } else {
+          modified = true;
+        }
+        i++;
+        continue;
+      }
+
+      if (blockComment) {
+        if (ch === '*' && next === '/') {
+          blockComment = false;
+          output += ' ';
+          modified = true;
+          i += 2;
+          continue;
+        }
+        if (ch === '\n') {
+          output += ch;
+        } else {
+          modified = true;
+        }
+        i++;
+        continue;
+      }
+
+      if (inString) {
+        output += ch;
+        if (ch === '\\' && i + 1 < input.length) {
+          output += input[i + 1];
+          i += 2;
+          continue;
+        }
+        if (ch === '"') {
+          inString = false;
+        }
+        i++;
+        continue;
+      }
+
+      if (ch === '"') {
+        inString = true;
+        output += ch;
+        i++;
+        continue;
+      }
+
+      if (ch === '/' && next === '/') {
+        lineComment = true;
+        output += ' ';
+        modified = true;
+        i += 2;
+        continue;
+      }
+
+      if (ch === '/' && next === '*') {
+        blockComment = true;
+        output += ' ';
+        modified = true;
+        i += 2;
+        continue;
+      }
+
+      // Trailing comma immediately before a closing bracket or brace.
+      if (ch === ',') {
+        let j = i + 1;
+        while (j < input.length && /\s/.test(input[j])) {
+          j++;
+        }
+        if (input[j] === ']' || input[j] === '}') {
+          modified = true;
+          i++;
+          continue;
+        }
+      }
+
+      output += ch;
+      i++;
+    }
+
+    return { text: output, modified: modified };
+  }
+
   function render(text) {
     editorEl.innerHTML = '';
     parseError = null;
+    sanitizedJsonc = false;
 
     if (text.trim() === '') {
       editorEl.classList.add('hidden');
@@ -338,18 +441,33 @@
       return;
     }
 
+    let value;
     try {
-      const value = JSON.parse(text);
-      editorEl.appendChild(renderValue(value));
-      editorEl.classList.remove('hidden');
-      hideEmpty();
+      value = JSON.parse(text);
     } catch (err) {
-      parseError = err;
-      editorEl.classList.add('hidden');
-      showEmpty(
-        '<p class="error">Invalid JSON: ' + escapeHtml(err.message) + '</p>'
-      );
+      const sanitized = sanitizeJsonc(text);
+      try {
+        value = JSON.parse(sanitized.text);
+        sanitizedJsonc = sanitized.modified;
+        if (sanitizedJsonc) {
+          setStatus(
+            'JSONC converted (comments/trailing commas removed for editing).',
+            false
+          );
+        }
+      } catch (err2) {
+        parseError = err2;
+        editorEl.classList.add('hidden');
+        showEmpty(
+          '<p class="error">Invalid JSON: ' + escapeHtml(err2.message) + '</p>'
+        );
+        return;
+      }
     }
+
+    editorEl.appendChild(renderValue(value));
+    editorEl.classList.remove('hidden');
+    hideEmpty();
   }
 
   function setAllCollapsed(collapsed) {
@@ -377,7 +495,10 @@
     const value = serializeNode(editorEl.firstElementChild);
     const text = JSON.stringify(value, null, 2) + '\n';
     vscode.postMessage({ type: 'save', text });
-    setStatus('Saved', false);
+    setStatus(
+      sanitizedJsonc ? 'Saved (comments/trailing commas removed)' : 'Saved',
+      false
+    );
   }
 
   // -------------------------------------------------------------------------
